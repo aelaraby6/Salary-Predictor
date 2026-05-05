@@ -1,18 +1,7 @@
 import { useState } from 'react'
+import api from '../api/axios'
 import ResultCard from '../components/ResultCard'
 import StatsRow from '../components/StatsRow'
-
-const SALARY_MAP = {
-    'Data Scientist': { EN: 72, MI: 105, SE: 145, EX: 190 },
-    'ML Engineer': { EN: 80, MI: 118, SE: 162, EX: 210 },
-    'Data Engineer': { EN: 68, MI: 98, SE: 138, EX: 175 },
-    'Data Analyst': { EN: 55, MI: 78, SE: 108, EX: 145 },
-    'Research Scientist': { EN: 85, MI: 125, SE: 170, EX: 220 },
-}
-
-const SIZE_MULTI = { S: 0.85, M: 1.0, L: 1.15 }
-const LOC_MULTI = { US: 1.3, GB: 1.1, CA: 1.05, DE: 1.0, AU: 1.0, IN: 0.45, FR: 0.95, OTHER: 0.8 }
-const REM_MULTI = { 0: 0.95, 50: 1.0, 100: 1.05 }
 
 const REM_LABELS = { 0: '0% — On-site', 50: '50% — Hybrid', 100: '100% — Remote' }
 
@@ -47,8 +36,8 @@ export default function PredictPage() {
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
-    function predict() {
-        const { job_title, experience, company_size, company_loc, remote_ratio } = form
+    async function predict() {
+        const { job_title, experience, employment, company_size, company_loc, work_year, remote_ratio } = form
         if (!job_title || !experience || !company_size || !company_loc) {
             alert('Please fill in all fields.')
             return
@@ -56,23 +45,35 @@ export default function PredictPage() {
 
         setLoading(true)
 
-        setTimeout(() => {
-            const base = SALARY_MAP[job_title][experience]
-            const rem = parseInt(remote_ratio)
-            const final = Math.round(base * (SIZE_MULTI[company_size] || 1) * (LOC_MULTI[company_loc] || 0.9) * (REM_MULTI[rem] || 1))
+        try {
+            const res = await api.post('/predict', {
+                job_title,
+                experience_level: experience,
+                employment_type: employment,
+                company_size,
+                company_location: company_loc === 'OTHER' ? 'Other' : company_loc,
+                work_year: parseInt(work_year),
+                remote_ratio: parseInt(remote_ratio),
+            })
+
+            const salary = Math.round(res.data.predicted_salary_usd / 1000)
 
             setResult({
-                salary: final,
-                low: Math.round(final * 0.85),
-                high: Math.round(final * 1.15),
+                salary,
+                low: Math.round(salary * 0.85),
+                high: Math.round(salary * 1.15),
                 job: job_title,
                 exp: experience,
                 size: company_size,
                 loc: company_loc,
-                remote: rem,
+                remote: parseInt(remote_ratio),
             })
+        } catch (err) {
+            alert('Error connecting to API. Make sure the backend is running.')
+            console.error(err)
+        } finally {
             setLoading(false)
-        }, 1200)
+        }
     }
 
     return (
@@ -106,7 +107,11 @@ export default function PredictPage() {
                         <Field label="Job Title">
                             <select className={inputCls} value={form.job_title} onChange={e => set('job_title', e.target.value)}>
                                 <option value="">Select role…</option>
-                                {Object.keys(SALARY_MAP).map(j => <option key={j}>{j}</option>)}
+                                <option value="Data Scientist">Data Scientist</option>
+                                <option value="ML Engineer">ML Engineer</option>
+                                <option value="Data Engineer">Data Engineer</option>
+                                <option value="Data Analyst">Data Analyst</option>
+                                <option value="Research Scientist">Research Scientist</option>
                             </select>
                         </Field>
 
@@ -160,7 +165,6 @@ export default function PredictPage() {
                             </select>
                         </Field>
 
-                        {/* Remote Ratio — full width */}
                         <Field label="Remote Ratio" className="col-span-2 max-[800px]:col-span-1">
                             <div className="flex flex-col gap-2">
                                 <input
@@ -183,7 +187,6 @@ export default function PredictPage() {
 
                     </div>
 
-                    {/* Submit */}
                     <button
                         onClick={predict}
                         disabled={loading}
@@ -208,7 +211,6 @@ export default function PredictPage() {
                 <div className="flex flex-col gap-5">
                     <ResultCard result={result} />
 
-                    {/* Model badge */}
                     <div className="bg-amber-light border border-[#e8d5b0] rounded-xl p-[14px_18px] flex items-center gap-3 animate-fadeUp [animation-delay:80ms]">
                         <div className="w-9 h-9 bg-amber rounded-[9px] flex items-center justify-center text-base flex-shrink-0">
                             ⚡
@@ -218,7 +220,7 @@ export default function PredictPage() {
                                 Best Performing Model
                             </p>
                             <p className="text-[0.875rem] font-semibold text-ink">
-                                Ridge Regression — R² 0.847
+                                Ridge Regression — R² 0.402
                             </p>
                         </div>
                     </div>
