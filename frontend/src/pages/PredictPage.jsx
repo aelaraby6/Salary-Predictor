@@ -80,12 +80,12 @@ export default function PredictPage() {
         <>
             {/* Hero */}
             <div className="max-w-[1100px] mx-auto px-10 pt-16">
-                <div className="inline-flex items-center gap-[6px] bg-green-light text-green text-[0.775rem] font-semibold tracking-[0.8px] uppercase px-3 py-[5px] rounded-full mb-5">
+                <div className="inline-flex items-center gap-[6px] bg-green-light text-green text-[0.775rem] font-light tracking-[0.8px] uppercase px-3 py-[5px] rounded-full mb-5">
                     <span className="w-[6px] h-[6px] bg-green rounded-full" />
                     ML-Powered
                 </div>
 
-                <h1 className="font-serif text-[3.2rem] leading-[1.15] tracking-[-1.5px] text-ink max-w-[620px] mb-4">
+                <h1 className="font-light text-[3.2rem] leading-[1.15] tracking-[-1.5px] text-ink max-w-[620px] mb-4">
                     Know your <em className="not-italic text-green">market value</em> before the interview.
                 </h1>
 
@@ -99,7 +99,7 @@ export default function PredictPage() {
 
                 {/* Form Card */}
                 <div className="bg-white border border-border rounded-2xl p-8 shadow-md animate-fadeUp">
-                    <h2 className="font-serif text-[1.3rem] tracking-[-0.4px] mb-[6px]">Your Profile</h2>
+                    <h2 className="font-light text-[1.3rem] tracking-[-0.4px] mb-[6px]">Your Profile</h2>
                     <p className="text-[0.825rem] text-muted mb-7 font-light">All fields are used to improve prediction accuracy.</p>
 
                     <div className="grid grid-cols-2 gap-4 mb-4 max-[800px]:grid-cols-1">

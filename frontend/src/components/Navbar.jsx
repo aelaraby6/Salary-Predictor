@@ -4,7 +4,7 @@ export default function Navbar({ activePage, setActivePage }) {
             {/* Logo */}
             <div className="font-serif text-[1.45rem] text-ink tracking-[-0.5px] flex items-center gap-2">
                 <span className="w-2 h-2 bg-green rounded-full inline-block" />
-                PaySight
+                Salary Predictor
             </div>
 
             {/* Links */}
