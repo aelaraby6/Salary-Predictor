@@ -1,6 +1,7 @@
-fastapi
-uvicorn
-scikit-learn
-pandas
-numpy
-joblib
+fastapi==0.115.*
+uvicorn[standard]==0.30.*
+pydantic>=2.7,<3
+pandas==2.2.*
+numpy<2.1
+scikit-learn==1.5.* # MUST equal the version used for training
+joblib==1.4.*

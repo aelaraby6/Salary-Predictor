@@ -1,0 +1,20 @@
+{
+  "model_version": "v1",
+  "algorithm": "RidgeCV",
+  "trained_on_rows": 2584,
+  "trained_at": "2026-11-21T12:27:05",
+  "sklearn_version": "1.8.0",
+  "features": [
+    "work_year",
+    "experience_level",
+    "employment_type",
+    "job_title",
+    "employee_residence",
+    "remote_ratio",
+    "company_location",
+    "company_size"
+  ],
+  "test_rmse": 48152.24,
+  "test_mae": 37159.66,
+  "test_r2": 0.4546
+}
