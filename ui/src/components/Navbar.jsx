@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     TrendingUp,
     BookOpen,
@@ -6,8 +6,9 @@ import {
     X,
     Sparkles,
     CheckCircle2,
-    SlidersHorizontal
+    SlidersHorizontal,
 } from 'lucide-react'
+import { useSalaryStore } from '../store/salaryStore'
 
 function GithubIcon({ className = 'w-4 h-4' }) {
     return (
@@ -25,6 +26,12 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [methodologyOpen, setMethodologyOpen] = useState(false)
 
+    const { backendStatus, checkHealth, modelVersion } = useSalaryStore()
+
+    useEffect(() => {
+        checkHealth()
+    }, [checkHealth])
+
     const navItems = [
         {
             key: 'predict',
@@ -34,7 +41,7 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
         },
         {
             key: 'methodology',
-            label: 'Methodology & Data',
+            label: 'Methodology & Model',
             icon: BookOpen,
             action: () => setMethodologyOpen(true),
         },
@@ -57,24 +64,40 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
 
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
-                                    <span className="font-serif text-[1.35rem] leading-none text-ink tracking-[-0.3px]">
+                                    <span className="font-bold text-[1.18rem] leading-none text-ink tracking-tight">
                                         Salary Predictor
                                     </span>
                                     <span className="inline-block text-[10px] font-mono font-medium uppercase tracking-wider text-muted px-1.5 py-0.5 rounded border border-border2/60 bg-cream">
-                                        v1.0
+                                        Ridge {modelVersion}
                                     </span>
                                 </div>
-                            
+                                <span className="text-[11px] font-sans text-muted tracking-normal hidden sm:block">
+                                    Data & AI Compensation Intelligence
+                                </span>
                             </div>
                         </button>
 
-                        {/* Live Model Badge (Desktop) */}
+                        {/* Live Backend / Model Status Badge */}
                         <div className="hidden md:inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-cream border border-border text-[11px] font-medium text-ink2">
                             <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-40" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+                                {backendStatus === 'online' ? (
+                                    <>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-40" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+                                    </>
+                                ) : backendStatus === 'checking' ? (
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber" />
+                                ) : (
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                                )}
                             </span>
-                            <span>10,400+ Verified Data Points</span>
+                            <span>
+                                {backendStatus === 'online'
+                                    ? 'Ridge Model Active'
+                                    : backendStatus === 'checking'
+                                    ? 'Checking Server…'
+                                    : 'API Standby'}
+                            </span>
                         </div>
                     </div>
 
@@ -104,7 +127,7 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
 
                         {/* GitHub Source Link */}
                         <a
-                            href="https://github.com/aelaraby6/Salary-Predictor"
+                            href="https://github.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 text-ink2 hover:text-ink hover:bg-cream rounded-lg transition-colors cursor-pointer"
@@ -118,7 +141,12 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                         <button
                             onClick={() => {
                                 setActivePage && setActivePage('predict')
-                                window.scrollTo({ top: 380, behavior: 'smooth' })
+                                const formEl = document.getElementById('prediction-form')
+                                if (formEl) {
+                                    formEl.scrollIntoView({ behavior: 'smooth' })
+                                } else {
+                                    window.scrollTo({ top: 380, behavior: 'smooth' })
+                                }
                             }}
                             className="ml-1 inline-flex items-center gap-1.5 bg-green hover:bg-[#23533e] text-white text-xs font-medium px-3.5 py-1.5 rounded-lg shadow-xs transition-all active:scale-[0.98] cursor-pointer"
                         >
@@ -145,10 +173,11 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                         {/* Live Status indicator */}
                         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-cream border border-border text-xs text-ink2">
                             <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-40" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+                                <span className={`inline-flex rounded-full h-2 w-2 ${backendStatus === 'online' ? 'bg-green' : 'bg-amber'}`} />
                             </span>
-                            <span>Model active • 10,400+ salary benchmarks</span>
+                            <span>
+                                {backendStatus === 'online' ? 'Ridge Model Ready • 2,584 records' : 'FastAPI Local Server'}
+                            </span>
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -184,7 +213,7 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                                 className="flex items-center gap-2 text-xs text-ink2 hover:text-ink px-3 py-2 rounded-lg bg-cream border border-border/80 flex-1 justify-center"
                             >
                                 <GithubIcon className="w-3.5 h-3.5" />
-                                <span>Source Code</span>
+                                <span>Source</span>
                             </a>
                             <button
                                 onClick={() => {
@@ -195,7 +224,7 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                                 className="flex items-center gap-2 text-xs font-medium text-white bg-green hover:bg-[#23533e] px-4 py-2 rounded-lg flex-1 justify-center shadow-xs"
                             >
                                 <Sparkles className="w-3.5 h-3.5" />
-                                <span>Calculate</span>
+                                <span>Estimate</span>
                             </button>
                         </div>
                     </div>
@@ -217,8 +246,8 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                                     <Sparkles className="w-3 h-3" />
                                     Transparency & Model Specs
                                 </div>
-                                <h3 className="font-serif text-2xl text-ink tracking-tight">
-                                    Methodology & Data
+                                <h3 className="font-bold text-xl text-ink tracking-tight">
+                                    Ridge Regression Model
                                 </h3>
                             </div>
                             <button
@@ -233,42 +262,50 @@ export default function Navbar({ activePage = 'predict', setActivePage }) {
                         {/* Content */}
                         <div className="py-4 space-y-4 text-xs sm:text-sm text-ink2 leading-relaxed">
                             <p>
-                                Predictions are generated using an ensemble machine learning model trained on verified global tech compensation figures across North America, Europe, and international markets.
+                                Compensation figures are estimated via a cross-validated <strong>Ridge Regression (L2 penalty)</strong> model. Ridge prevents overfitting across high-dimensional categorical features such as job titles and international countries while maintaining interpretable linear coefficients.
                             </p>
 
                             <div className="bg-cream/70 border border-border rounded-xl p-3.5 space-y-2">
                                 <div className="flex items-center justify-between text-xs font-semibold text-ink">
-                                    <span>Model Architecture</span>
-                                    <span className="font-mono text-green">Ridge</span>
+                                    <span>Algorithm Pipeline</span>
+                                    <span className="font-mono text-green">RidgeCV (L2 Regularized)</span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs text-muted">
-                                    <span>Training Corpus</span>
-                                    <span className="font-mono text-ink2 font-medium">10,400+ records</span>
+                                    <span>Training Sample</span>
+                                    <span className="font-mono text-ink2 font-medium">2,584 records (80/20 split)</span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs text-muted">
-                                    <span>Currency Standard</span>
-                                    <span className="font-mono text-ink2 font-medium">USD ($) Annual Base</span>
+                                    <span>Test Mean Absolute Error (MAE)</span>
+                                    <span className="font-mono text-ink2 font-medium">$37,160</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs text-muted">
+                                    <span>Validation R² Score</span>
+                                    <span className="font-mono text-ink2 font-medium">0.455</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs text-muted">
+                                    <span>Preprocessor</span>
+                                    <span className="font-mono text-ink2 font-medium">OneHotEncoder + StandardScaler</span>
                                 </div>
                             </div>
 
                             <div className="space-y-2 text-xs">
-                                <h4 className="font-semibold text-ink">Key Factors Evaluated:</h4>
+                                <h4 className="font-semibold text-ink">Included Pipeline Features:</h4>
                                 <ul className="grid grid-cols-2 gap-2 text-muted">
                                     <li className="flex items-center gap-1.5">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-green shrink-0" />
-                                        Seniority & Experience level
+                                        Role title & specialisation
                                     </li>
                                     <li className="flex items-center gap-1.5">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-green shrink-0" />
-                                        Remote vs On-site policy
+                                        Seniority (EN, MI, SE, EX)
                                     </li>
                                     <li className="flex items-center gap-1.5">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-green shrink-0" />
-                                        Company scale & capital tier
+                                        Company location & Residence
                                     </li>
                                     <li className="flex items-center gap-1.5">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-green shrink-0" />
-                                        Market geography & inflation
+                                        Remote ratio & Company scale
                                     </li>
                                 </ul>
                             </div>

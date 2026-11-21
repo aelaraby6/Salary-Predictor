@@ -15,8 +15,10 @@
     --color-amber-light: #fdf3e3;
 
     /* Fonts */
-    --font-serif: "Instrument Serif", serif;
-    --font-sans: "DM Sans", sans-serif;
+    --font-serif: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
     /* Shadows */
     --shadow-sm: 0 1px 3px rgba(26, 24, 20, 0.06), 0 1px 2px rgba(26, 24, 20, 0.04);
