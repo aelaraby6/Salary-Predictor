@@ -1,7 +1,5 @@
 # Salary Predictor
 
-> **Know your fair market value before negotiations.**  
-> An end-to-end Machine Learning web application that estimates tech salaries using cross-validated Ridge Regression trained on 2,580+ verified global compensation records.
 
 ---
 
